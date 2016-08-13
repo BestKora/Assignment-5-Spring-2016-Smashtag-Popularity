@@ -71,11 +71,18 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate
     
     private func updateDatabase(newTweets: [Twitter.Tweet]) {
         moc?.performBlock {
-            for twitterInfo in newTweets {
+            // более эффективный способ
+            
+            TweetM.newTweetsWithTwitterInfo(newTweets,
+                andSearchTerm: self.searchText!,
+                inManagedObjectContext: self.moc!)
+
+            
+       /*     for twitterInfo in newTweets {
                TweetM.tweetWithTwitterInfo(twitterInfo,
                                            andSearchTerm: self.searchText!,
                                            inManagedObjectContext: self.moc!)
-            }
+            }*/
          self.moc?.saveThrows()
         }
         printDatabaseStatistics() 

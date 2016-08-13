@@ -62,5 +62,45 @@ class TweetM: NSManagedObject {
         
         return nil
     }
-
+    
+    class func newTweetsWithTwitterInfo(twitterInfo: [Twitter.Tweet],
+                                        andSearchTerm term: String,
+                                        inManagedObjectContext context: NSManagedObjectContext)
+    {
+        let request = NSFetchRequest(entityName: "TweetM")
+        let newTweetsId = twitterInfo.map {$0.id}
+        let newSet = NSSet (array: newTweetsId)
+        
+        request.predicate = NSPredicate(
+            format: "any terms.term contains[c] %@ and unique IN %@", term, newSet)
+        
+        let results = try? context.executeFetchRequest(request)
+        if let tweets =  results as? [TweetM] {
+            let uniques = tweets.flatMap({ $0.unique})//.sort()
+            let uniquesSet = Set (uniques)
+            
+            var news = Set(newTweetsId)
+            news.subtractInPlace(uniquesSet)
+            print ("кол-во новых элементов \(news.count)")
+            for unic in news {
+                if let index = twitterInfo.indexOf({$0.id == unic}){
+                    // получаем твит, получаем терм и добавляем терм в terms для этого твита
+                    
+                    if let tweetM = TweetM.tweetWithTwitterInfo(twitterInfo[index],
+                                                                inManagedObjectContext: context),
+                        let currentTerm = SearchTerm.termWithTerm(term,
+                                                                inManagedObjectContext: context){
+                        
+                        let terms = tweetM.mutableSetValueForKey("terms")
+                        terms.addObject(currentTerm)
+                        
+                        // добавляем меншены
+                        Mension.mensionsWithTwitterInfo(twitterInfo[index],
+                                                        andSearchTerm: term,
+                                                        inManagedObjectContext: context)
+                    }
+                }
+            }
+        }
+    }
 }
