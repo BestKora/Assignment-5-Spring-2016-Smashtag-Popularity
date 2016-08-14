@@ -69,20 +69,19 @@ class TweetM: NSManagedObject {
     {
         let request = NSFetchRequest(entityName: "TweetM")
         let newTweetsId = twitterInfo.map {$0.id}
-        let newSet = NSSet (array: newTweetsId)
+        var newsSet = Set (newTweetsId)
         
         request.predicate = NSPredicate(
-            format: "any terms.term contains[c] %@ and unique IN %@", term, newSet)
+            format: "any terms.term contains[c] %@ and unique IN %@", term, newsSet)
         
         let results = try? context.executeFetchRequest(request)
         if let tweets =  results as? [TweetM] {
             let uniques = tweets.flatMap({ $0.unique})//.sort()
             let uniquesSet = Set (uniques)
             
-            var news = Set(newTweetsId)
-            news.subtractInPlace(uniquesSet)
-            print ("кол-во новых элементов \(news.count)")
-            for unic in news {
+            newsSet.subtractInPlace(uniquesSet)
+            print ("кол-во новых элементов \(newsSet.count)")
+            for unic in newsSet {
                 if let index = twitterInfo.indexOf({$0.id == unic}){
                     // получаем твит, получаем терм и добавляем терм в terms для этого твита
                     

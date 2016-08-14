@@ -66,7 +66,7 @@ extension UIManagedDocument
         if !fileManager.fileExistsAtPath(url.path!) {
             document.saveToURL(url, forSaveOperation: .ForCreating) { (success) -> Void in
                 if success {
-                    print("File создан: Success")
+                  //  print("File создан: Success")
                     completion (document: document)
                 }
             }
@@ -74,7 +74,7 @@ extension UIManagedDocument
             if document.documentState == .Closed {
                 document.openWithCompletionHandler(){(success:Bool) -> Void in
                     if success {
-                        print("File существует: Открыт")
+                     //   print("File существует: Открыт")
                         completion (document: document)                    }
                 }
             } else {
