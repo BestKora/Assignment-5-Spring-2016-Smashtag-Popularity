@@ -68,6 +68,7 @@ class TweetM: NSManagedObject {
                                         inManagedObjectContext context: NSManagedObjectContext)
     {
         let request = NSFetchRequest(entityName: "TweetM")
+        
         let newTweetsId = twitterInfo.map {$0.id}
         var newsSet = Set (newTweetsId)
         
@@ -76,11 +77,12 @@ class TweetM: NSManagedObject {
         
         let results = try? context.executeFetchRequest(request)
         if let tweets =  results as? [TweetM] {
-            let uniques = tweets.flatMap({ $0.unique})//.sort()
+            let uniques = tweets.flatMap({ $0.unique})
             let uniquesSet = Set (uniques)
             
             newsSet.subtractInPlace(uniquesSet)
             print ("кол-во новых элементов \(newsSet.count)")
+            
             for unic in newsSet {
                 if let index = twitterInfo.indexOf({$0.id == unic}){
                     // получаем твит, получаем терм и добавляем терм в terms для этого твита
@@ -89,7 +91,6 @@ class TweetM: NSManagedObject {
                                                                 inManagedObjectContext: context),
                         let currentTerm = SearchTerm.termWithTerm(term,
                                                                 inManagedObjectContext: context){
-                        
                         let terms = tweetM.mutableSetValueForKey("terms")
                         terms.addObject(currentTerm)
                         
