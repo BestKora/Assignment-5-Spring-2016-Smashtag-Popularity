@@ -177,25 +177,8 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate
         if RecentSearches.searches.first == nil {
              RecentSearches.add(searchText!)
         }
-        
-        let imageButton = UIBarButtonItem(barButtonSystemItem: .Camera,
-                                          target: self,
-                                          action: #selector(TweetTableViewController.showImages(_:)))
-         navigationItem.rightBarButtonItems = [imageButton]
-        if navigationController?.viewControllers == nil  ||  navigationController?.viewControllers.count > 2 {
-            
-        let stopBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Stop,
-                    target: self,
-                    action: #selector(TweetTableViewController.toRootViewController(_:)))
-            
-            if let rightBarButtonItem = navigationItem.rightBarButtonItem {
-                navigationItem.rightBarButtonItems = [stopBarButtonItem, rightBarButtonItem]
-            } else {
-                navigationItem.rightBarButtonItem = stopBarButtonItem
-            }
-            
-        }
     }
+ 
     
     func toRootViewController(sender: UIBarButtonItem) {
         navigationController?.popToRootViewControllerAnimated(true)
@@ -208,6 +191,27 @@ class TweetTableViewController: UITableViewController, UITextFieldDelegate
     
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
+        
+        //-------- Stop Button
+        
+        let imageButton = UIBarButtonItem(barButtonSystemItem: .Camera,
+                                          target: self,
+                                          action: #selector(TweetTableViewController.showImages(_:)))
+        navigationItem.rightBarButtonItems = [imageButton]
+        if navigationController?.viewControllers.count > 1 {
+            
+            let stopBarButtonItem = UIBarButtonItem(barButtonSystemItem: .Stop,
+                                                    target: self,
+                                                    action: #selector(TweetTableViewController.toRootViewController(_:)))
+            
+            if let rightBarButtonItem = navigationItem.rightBarButtonItem {
+                navigationItem.rightBarButtonItems = [stopBarButtonItem, rightBarButtonItem]
+            } else {
+                navigationItem.rightBarButtonItem = stopBarButtonItem
+            }
+            
+        }
+        //---------
         if moc == nil {
             UIManagedDocument.useDocument{ (document) in
                     self.moc =  document.managedObjectContext
